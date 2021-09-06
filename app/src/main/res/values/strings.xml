@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Stock tickers</string>
+    <string name="app_name">Popular Stocks</string>
+    <string name="error_message">Oops!!! Something went wrong. Please try again later</string>
+    <string name="dollar_symbol">$</string>
 </resources>
