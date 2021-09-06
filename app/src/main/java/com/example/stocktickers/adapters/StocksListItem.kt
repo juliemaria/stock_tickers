@@ -5,14 +5,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.repository.model.Details
-import com.example.repository.model.StockTickersSymbol
+import com.example.repository.model.StockTickersResponse
 import com.example.stocktickers.R
 import com.example.stocktickers.databinding.StockListItemBinding
+import com.example.stocktickers.listeners.StockListItemClickListener
 
-class StocksListItem : RecyclerView.Adapter<StocksListItem.StockListItemViewHolder>() {
+class StocksListItem(val listener: StockListItemClickListener) :
+    RecyclerView.Adapter<StocksListItem.StockListItemViewHolder>() {
     private var stocksList: ArrayList<Details>? = null
 
-    fun setStockList(stocks: StockTickersSymbol) {
+    fun setStockList(stocks: StockTickersResponse) {
         this.stocksList =
             arrayListOf(stocks.aapl, stocks.crm, stocks.tsla, stocks.msft, stocks.pega)
         notifyDataSetChanged()
@@ -39,11 +41,16 @@ class StocksListItem : RecyclerView.Adapter<StocksListItem.StockListItemViewHold
                 currentPrice = it.price
             )
         }
+        holder.itemView.setOnClickListener {
+            stocksList?.let { stockList ->
+                listener.onStockListItemClick(stockList[position])
+            }
+        }
 
     }
 
     class StockListItemViewHolder(private val binding: StockListItemBinding) :
-        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(symbol: String, name: String, currentPrice: String) {
             binding.textViewSymbol.text = symbol
@@ -53,11 +60,6 @@ class StocksListItem : RecyclerView.Adapter<StocksListItem.StockListItemViewHold
                     R.string.dollar_symbol
                 ).plus(currentPrice)
         }
-
-        override fun onClick(v: View) {
-
-        }
-
     }
 
 }

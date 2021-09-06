@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class StockTickersSymbol(
+data class StockTickersResponse(
     @SerializedName(StockApiConstants.PEGA)
     @Expose
     val pega: Details,

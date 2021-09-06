@@ -8,16 +8,21 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.repository.model.Details
+import com.example.repository.model.StockTickersResponse
+import com.example.stocktickers.R
 import com.example.stocktickers.adapters.StocksListItem
 import com.example.stocktickers.databinding.FragmentStocksListBinding
+import com.example.stocktickers.listeners.StockListItemClickListener
 import com.example.stocktickers.viewmodels.StocksListViewModel
 
 
-class StocksListFragment : Fragment() {
+class StocksListFragment : Fragment(), StockListItemClickListener {
     private val stockListViewModel: StocksListViewModel by activityViewModels()
-    lateinit var binding: FragmentStocksListBinding
-    private val adapter = StocksListItem()
+    private lateinit var binding: FragmentStocksListBinding
+    private lateinit var stockListAdapter: StocksListItem
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,19 +40,21 @@ class StocksListFragment : Fragment() {
     }
 
     private fun initView() {
-        binding.recyclerViewStocksList.adapter = adapter
+        stockListAdapter = StocksListItem(this)
+        binding.recyclerViewStocksList.adapter = stockListAdapter
         binding.recyclerViewStocksList.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
     }
 
     private fun fetchListOfStocks() {
+        stockListViewModel.loading.value = true
         stockListViewModel.getAllStocks()
     }
 
     private fun subscribeObserver() {
 
         stockListViewModel.listOfStocks.observe(viewLifecycleOwner, Observer {
-            adapter.setStockList(it)
+            stockListAdapter.setStockList(it)
         })
 
         stockListViewModel.errorMessage.observe(viewLifecycleOwner, Observer {
@@ -61,5 +68,10 @@ class StocksListFragment : Fragment() {
                 binding.progressBar.visibility = View.GONE
             }
         })
+    }
+
+    override fun onStockListItemClick(details: Details) {
+        findNavController().navigate(R.id.action_stock_list_to_detail)
+        stockListViewModel.setSelectedStockDetail(details)
     }
 }

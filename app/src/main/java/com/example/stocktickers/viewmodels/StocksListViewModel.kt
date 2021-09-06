@@ -4,18 +4,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.repository.ApplicationRepository
 import com.example.repository.api.StockApiConstants
-import com.example.repository.model.StockTickersSymbol
+import com.example.repository.model.Details
+import com.example.repository.model.StockTickersResponse
 import kotlinx.coroutines.*
 
 class StocksListViewModel
 constructor(private val applicationRepository: ApplicationRepository) : ViewModel() {
-    val listOfStocks = MutableLiveData<StockTickersSymbol>()
+    val listOfStocks = MutableLiveData<StockTickersResponse>()
     var job: Job? = null
     val errorMessage = MutableLiveData<String>()
+    private var selectedStockTickerDetails =  MutableLiveData<Details>()
     val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         onError("Exception handled: ${throwable.localizedMessage}")
     }
-    val loading = MutableLiveData<Boolean>()
+    var loading = MutableLiveData<Boolean>()
     fun getAllStocks() {
 
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -32,7 +34,7 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
         }
     }
 
-    private fun setListOfStocks(body: StockTickersSymbol) {
+    private fun setListOfStocks(body: StockTickersResponse) {
         body.aapl.symbol = StockApiConstants.AAPL
         body.crm.symbol = StockApiConstants.CRM
         body.tsla.symbol = StockApiConstants.TSLA
@@ -49,5 +51,12 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
     override fun onCleared() {
         super.onCleared()
         job?.cancel()
+    }
+
+    fun setSelectedStockDetail(stockTickersDetailsResponse: Details){
+        this.selectedStockTickerDetails.value = stockTickersDetailsResponse
+    }
+    fun getSelectedStockDetails(): MutableLiveData<Details> {
+        return this.selectedStockTickerDetails
     }
 }

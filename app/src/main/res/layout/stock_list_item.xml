@@ -6,7 +6,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_medium"
         android:padding="@dimen/margin_medium"
-        app:cardCornerRadius="@dimen/margin_small_x">
+        app:cardCornerRadius="@dimen/margin_medium">
 
         <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"

@@ -1,7 +1,7 @@
 package com.example.repository
 
 import com.example.repository.api.StockTickersApi
-import com.example.repository.model.StockTickersSymbol
+import com.example.repository.model.StockTickersResponse
 import retrofit2.Response
 
 /***
@@ -9,6 +9,6 @@ import retrofit2.Response
  */
 class ApplicationRepository constructor(private val stockTickersApi: StockTickersApi){
 
-    suspend fun getStockTickersList(): Response<StockTickersSymbol>
+    suspend fun getStockTickersList(): Response<StockTickersResponse>
                          = stockTickersApi.getStockTickers()
 }

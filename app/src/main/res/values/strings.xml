@@ -2,4 +2,9 @@
     <string name="app_name">Popular Stocks</string>
     <string name="error_message">Oops!!! Something went wrong. Please try again later</string>
     <string name="dollar_symbol">$</string>
+    <string name="text_symbol">Symbol</string>
+    <string name="text_name">Name</string>
+    <string name="text_current_price">Current Price</string>
+    <string name="text_daily_low">Daily Low</string>
+    <string name="text_daily_high">Daily High</string>
 </resources>

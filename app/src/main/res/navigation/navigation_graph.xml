@@ -5,5 +5,12 @@
     app:startDestination="@id/stockList">
     <fragment
         android:id="@+id/stockList"
-        android:name="com.example.stocktickers.fragments.StocksListFragment"/>
+        android:name="com.example.stocktickers.fragments.StocksListFragment">
+        <action
+            android:id="@+id/action_stock_list_to_detail"
+            app:destination="@+id/stockDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/stockDetail"
+        android:name="com.example.stocktickers.fragments.StockDetailFragment" />
 </navigation>
