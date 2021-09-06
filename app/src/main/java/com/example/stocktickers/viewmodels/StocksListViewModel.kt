@@ -25,7 +25,7 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
 
     private fun repeatFun(): Job {
         return CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            while (NonCancellable.isActive) {
+            while (coroutineContext.isActive) {
                 val response = applicationRepository.getStockTickersList()
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
