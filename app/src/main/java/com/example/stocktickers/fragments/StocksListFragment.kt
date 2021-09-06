@@ -11,7 +11,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.repository.model.Details
-import com.example.repository.model.StockTickersResponse
 import com.example.stocktickers.R
 import com.example.stocktickers.adapters.StocksListItem
 import com.example.stocktickers.databinding.FragmentStocksListBinding
@@ -58,7 +57,14 @@ class StocksListFragment : Fragment(), StockListItemClickListener {
         })
 
         stockListViewModel.errorMessage.observe(viewLifecycleOwner, Observer {
-            Toast.makeText(requireActivity(), it, Toast.LENGTH_SHORT).show()
+            //The actual exception
+//            Toast.makeText(requireActivity(), it, Toast.LENGTH_SHORT).show()
+            //Shows the general message
+            Toast.makeText(
+                requireActivity(),
+                resources.getString(R.string.error_message),
+                Toast.LENGTH_SHORT
+            ).show()
         })
 
         stockListViewModel.loading.observe(viewLifecycleOwner, Observer {

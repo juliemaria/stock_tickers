@@ -7,6 +7,7 @@ import com.example.repository.api.StockApiConstants
 import com.example.repository.model.Details
 import com.example.repository.model.StockTickersResponse
 import kotlinx.coroutines.*
+import java.lang.Exception
 
 class StocksListViewModel
 constructor(private val applicationRepository: ApplicationRepository) : ViewModel() {
@@ -28,12 +29,16 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
             while (coroutineContext.isActive) {
                 val response = applicationRepository.getStockTickersList()
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        if (response.body() != null)
-                            setListOfStocks(response.body()!!)
-                        loading.value = false
-                    } else {
-                        onError("Error : ${response.message()} ")
+                    try {
+                        if (response.isSuccessful) {
+                            if (response.body() != null)
+                                setListOfStocks(response.body()!!)
+                            loading.value = false
+                        } else {
+                            onError("Error : ${response.message()} ")
+                        }
+                    }catch (exception: Exception){
+                        onError("Error : ${exception.message} ")
                     }
                 }
                 delay(10000)
@@ -52,8 +57,8 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
     }
 
     private fun onError(message: String) {
-        errorMessage.value = message
-        loading.value = false
+        errorMessage.postValue(message)
+        loading.postValue(false)
     }
 
     override fun onCleared() {
