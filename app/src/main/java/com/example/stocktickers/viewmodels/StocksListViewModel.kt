@@ -13,26 +13,34 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
     val listOfStocks = MutableLiveData<StockTickersResponse>()
     var job: Job? = null
     val errorMessage = MutableLiveData<String>()
-    private var selectedStockTickerDetails =  MutableLiveData<Details>()
-    val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+    private var selectedStockTickerDetails = MutableLiveData<Details>()
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         onError("Exception handled: ${throwable.localizedMessage}")
     }
     var loading = MutableLiveData<Boolean>()
     fun getAllStocks() {
+         //start the loop
+        repeatFun()
+    }
 
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = applicationRepository.getStockTickersList()
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    if (response.body()!=null)
-                    setListOfStocks(response.body()!!)
-                    loading.value = false
-                } else {
-                    onError("Error : ${response.message()} ")
+    private fun repeatFun(): Job {
+        return CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            while (NonCancellable.isActive) {
+                val response = applicationRepository.getStockTickersList()
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        if (response.body() != null)
+                            setListOfStocks(response.body()!!)
+                        loading.value = false
+                    } else {
+                        onError("Error : ${response.message()} ")
+                    }
                 }
+                delay(10000)
             }
         }
     }
+
 
     private fun setListOfStocks(body: StockTickersResponse) {
         body.aapl.symbol = StockApiConstants.AAPL
@@ -51,11 +59,14 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
     override fun onCleared() {
         super.onCleared()
         job?.cancel()
+        //Cancel the loop
+        repeatFun().cancel()
     }
 
-    fun setSelectedStockDetail(stockTickersDetailsResponse: Details){
+    fun setSelectedStockDetail(stockTickersDetailsResponse: Details) {
         this.selectedStockTickerDetails.value = stockTickersDetailsResponse
     }
+
     fun getSelectedStockDetails(): MutableLiveData<Details> {
         return this.selectedStockTickerDetails
     }
