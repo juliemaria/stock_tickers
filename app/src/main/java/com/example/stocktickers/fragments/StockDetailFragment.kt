@@ -44,5 +44,7 @@ class StockDetailFragment : Fragment() {
             resources.getString(R.string.dollar_symbol).plus(stockDetail.low)
         binding.textViewHighestPriceValue.text =
             resources.getString(R.string.dollar_symbol).plus(stockDetail.high)
+        stockListViewModel.setShowBackIcon(true)
+        stockListViewModel.setTitle(stockDetail.symbol)
     }
 }

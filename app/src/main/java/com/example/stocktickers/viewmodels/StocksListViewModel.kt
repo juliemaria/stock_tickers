@@ -19,12 +19,18 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
         onError("Exception handled: ${throwable.localizedMessage}")
     }
     var loading = MutableLiveData<Boolean>()
+    var title = MutableLiveData<String>()
+    var showBackIcon = MutableLiveData<Boolean>()
+
     fun getAllStocks() {
         loading.postValue(true)
         //start the loop
         getAllStocksJob()
     }
 
+    /**
+     * To fetch the list of stock tickers
+     */
     private fun getAllStocksJob(): Job {
         return CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             while (coroutineContext.isActive) {
@@ -41,11 +47,14 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
                         onError("Error : ${exception.message} ")
                     }
                 }
-                delay(10000)
+                delay(10000) // 10 seconds
             }
         }
     }
 
+    /**
+     * To set the stocks list from API to a reusable form
+     */
     private fun setSymbolOfStock(body: StockTickersResponse) {
         body.aapl.symbol = StockApiConstants.AAPL
         body.crm.symbol = StockApiConstants.CRM
@@ -79,7 +88,7 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
     override fun onCleared() {
         super.onCleared()
         job?.cancel()
-        //Cancel the loop
+        /*To cancel the loop*/
         getAllStocksJob().cancel()
     }
 
@@ -89,5 +98,18 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
 
     fun getSelectedPosition(): Int {
         return this.selectedPosition.value ?: 0
+    }
+
+    /**
+     * To set the application title
+     */
+    fun setTitle(title: String) {
+        this.title.value = title
+    }
+    /**
+     * To display/ hide the back icon
+     */
+    fun setShowBackIcon(showBackIcon: Boolean) {
+        this.showBackIcon.value = showBackIcon
     }
 }

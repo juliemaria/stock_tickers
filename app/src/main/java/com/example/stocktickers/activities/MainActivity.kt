@@ -1,7 +1,9 @@
 package com.example.stocktickers.activities
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.repository.ApplicationRepository
 import com.example.repository.api.StockTickersApi
@@ -24,5 +26,28 @@ class MainActivity : AppCompatActivity() {
             ViewModelProvider(this, StocksViewModelFactory(applicationRepository)).get(
                 StocksListViewModel::class.java
             )
+        subscribeObservers()
+    }
+
+    private fun subscribeObservers(){
+        stockListViewModel.title.observe(this, Observer {
+            supportActionBar?.title = it ?: resources.getString(R.string.app_name)
+        })
+
+        stockListViewModel.showBackIcon.observe(this, Observer { show ->
+            if (show){
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            }
+            else{
+                supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            }
+        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home){
+            super.onBackPressed()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

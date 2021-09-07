@@ -42,10 +42,13 @@ class StocksListFragment : Fragment(), StockListItemClickListener {
         binding.recyclerViewStocksList.adapter = stockListAdapter
         binding.recyclerViewStocksList.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+        stockListViewModel.setShowBackIcon(false)
+        stockListViewModel.setTitle(resources.getString(R.string.app_name))
     }
 
     private fun fetchListOfStocks() {
         binding.progressBar.visibility = View.VISIBLE
+        //Call to fetch the list of stock tickers
         stockListViewModel.getAllStocks()
     }
 
