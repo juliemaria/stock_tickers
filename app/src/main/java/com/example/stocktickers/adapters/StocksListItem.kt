@@ -1,22 +1,19 @@
 package com.example.stocktickers.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.repository.model.Details
-import com.example.repository.model.StockTickersResponse
 import com.example.stocktickers.R
 import com.example.stocktickers.databinding.StockListItemBinding
 import com.example.stocktickers.listeners.StockListItemClickListener
 
-class StocksListItem(val listener: StockListItemClickListener) :
+class StocksListItem(private val listener: StockListItemClickListener) :
     RecyclerView.Adapter<StocksListItem.StockListItemViewHolder>() {
     private var stocksList: ArrayList<Details>? = null
 
-    fun setStockList(stocks: StockTickersResponse) {
-        this.stocksList =
-            arrayListOf(stocks.aapl, stocks.crm, stocks.tsla, stocks.msft, stocks.pega)
+    fun setStockList(stocks: ArrayList<Details>) {
+        this.stocksList = stocks
         notifyDataSetChanged()
     }
 
@@ -27,10 +24,10 @@ class StocksListItem(val listener: StockListItemClickListener) :
     }
 
     override fun getItemCount(): Int {
-        if (stocksList != null)
-            return stocksList!!.size
+        return if (stocksList != null)
+            stocksList!!.size
         else
-            return 0
+            0
     }
 
     override fun onBindViewHolder(holder: StockListItemViewHolder, position: Int) {
@@ -42,9 +39,7 @@ class StocksListItem(val listener: StockListItemClickListener) :
             )
         }
         holder.itemView.setOnClickListener {
-            stocksList?.let { stockList ->
-                listener.onStockListItemClick(stockList[position])
-            }
+            listener.onStockListItemClick(position)
         }
 
     }

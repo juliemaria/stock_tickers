@@ -25,8 +25,4 @@ class MainActivity : AppCompatActivity() {
                 StocksListViewModel::class.java
             )
     }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
 }

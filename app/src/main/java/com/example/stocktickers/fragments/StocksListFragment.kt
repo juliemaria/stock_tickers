@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.repository.model.Details
 import com.example.stocktickers.R
 import com.example.stocktickers.adapters.StocksListItem
 import com.example.stocktickers.databinding.FragmentStocksListBinding
@@ -33,9 +32,9 @@ class StocksListFragment : Fragment(), StockListItemClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         fetchListOfStocks()
         subscribeObserver()
-        initView()
     }
 
     private fun initView() {
@@ -46,7 +45,7 @@ class StocksListFragment : Fragment(), StockListItemClickListener {
     }
 
     private fun fetchListOfStocks() {
-        stockListViewModel.loading.value = true
+        binding.progressBar.visibility = View.VISIBLE
         stockListViewModel.getAllStocks()
     }
 
@@ -54,6 +53,7 @@ class StocksListFragment : Fragment(), StockListItemClickListener {
 
         stockListViewModel.listOfStocks.observe(viewLifecycleOwner, Observer {
             stockListAdapter.setStockList(it)
+            stockListViewModel.loading.postValue(false)
         })
 
         stockListViewModel.errorMessage.observe(viewLifecycleOwner, Observer {
@@ -76,8 +76,8 @@ class StocksListFragment : Fragment(), StockListItemClickListener {
         })
     }
 
-    override fun onStockListItemClick(details: Details) {
+    override fun onStockListItemClick(position: Int) {
+        stockListViewModel.setSelectedPosition(position)
         findNavController().navigate(R.id.action_stock_list_to_detail)
-        stockListViewModel.setSelectedStockDetail(details)
     }
 }

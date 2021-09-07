@@ -7,24 +7,25 @@ import com.example.repository.api.StockApiConstants
 import com.example.repository.model.Details
 import com.example.repository.model.StockTickersResponse
 import kotlinx.coroutines.*
-import java.lang.Exception
 
 class StocksListViewModel
 constructor(private val applicationRepository: ApplicationRepository) : ViewModel() {
-    val listOfStocks = MutableLiveData<StockTickersResponse>()
+    private val stockTickersResponse = MutableLiveData<StockTickersResponse>()
+    var listOfStocks = MutableLiveData<ArrayList<Details>>()
     var job: Job? = null
     val errorMessage = MutableLiveData<String>()
-    private var selectedStockTickerDetails = MutableLiveData<Details>()
+    private var selectedPosition = MutableLiveData<Int>()
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         onError("Exception handled: ${throwable.localizedMessage}")
     }
     var loading = MutableLiveData<Boolean>()
     fun getAllStocks() {
-         //start the loop
-        repeatFun()
+        loading.postValue(true)
+        //start the loop
+        getAllStocksJob()
     }
 
-    private fun repeatFun(): Job {
+    private fun getAllStocksJob(): Job {
         return CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             while (coroutineContext.isActive) {
                 val response = applicationRepository.getStockTickersList()
@@ -32,12 +33,11 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
                     try {
                         if (response.isSuccessful) {
                             if (response.body() != null)
-                                setListOfStocks(response.body()!!)
-                            loading.value = false
+                                setSymbolOfStock(response.body()!!)
                         } else {
                             onError("Error : ${response.message()} ")
                         }
-                    }catch (exception: Exception){
+                    } catch (exception: Exception) {
                         onError("Error : ${exception.message} ")
                     }
                 }
@@ -46,14 +46,29 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
         }
     }
 
-
-    private fun setListOfStocks(body: StockTickersResponse) {
+    private fun setSymbolOfStock(body: StockTickersResponse) {
         body.aapl.symbol = StockApiConstants.AAPL
         body.crm.symbol = StockApiConstants.CRM
         body.tsla.symbol = StockApiConstants.TSLA
         body.msft.symbol = StockApiConstants.MSFT
         body.pega.symbol = StockApiConstants.PEGA
-        listOfStocks.postValue(body)
+        stockTickersResponse.postValue(body)
+        setListOfStocks()
+    }
+
+    private fun setListOfStocks() {
+        stockTickersResponse.value.let { stockTicker ->
+            if (stockTicker != null) {
+                val stockList = arrayListOf(
+                    stockTicker.aapl,
+                    stockTicker.crm,
+                    stockTicker.tsla,
+                    stockTicker.msft,
+                    stockTicker.pega
+                )
+                listOfStocks.postValue(stockList)
+            }
+        }
     }
 
     private fun onError(message: String) {
@@ -65,14 +80,14 @@ constructor(private val applicationRepository: ApplicationRepository) : ViewMode
         super.onCleared()
         job?.cancel()
         //Cancel the loop
-        repeatFun().cancel()
+        getAllStocksJob().cancel()
     }
 
-    fun setSelectedStockDetail(stockTickersDetailsResponse: Details) {
-        this.selectedStockTickerDetails.value = stockTickersDetailsResponse
+    fun setSelectedPosition(position: Int) {
+        this.selectedPosition.value = position
     }
 
-    fun getSelectedStockDetails(): MutableLiveData<Details> {
-        return this.selectedStockTickerDetails
+    fun getSelectedPosition(): Int {
+        return this.selectedPosition.value ?: 0
     }
 }
